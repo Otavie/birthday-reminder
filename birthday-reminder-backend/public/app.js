@@ -47,6 +47,19 @@ app.post('/birthdays', (req, res) => __awaiter(void 0, void 0, void 0, function*
         res.status(500).json({ message: 'Error adding celebrant!' });
     }
 }));
+app.get('/birthdays', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const celebrants = yield celebrants_1.default.find();
+        res.status(200).json({
+            message: "All celebrants details",
+            celebrants
+        });
+    }
+    catch (error) {
+        console.error('Error getting all the celebrants details:', error);
+        res.status(500).json({ message: 'Error getting all the celebrants!' });
+    }
+}));
 app.listen(PORT, () => {
     console.log(`Server is running on PORT http://localhost:${PORT}`);
 });

@@ -41,7 +41,20 @@ app.post('/birthdays', async (req: Request, res: Response) => {
         console.error('Error adding celebrant:', error)
         res.status(500).json({ message: 'Error adding celebrant!' })
     }
+})
 
+app.get('/birthdays', async (req: Request, res: Response) => {
+    try {
+        const celebrants = await Celebrants.find()
+        res.status(200).json({
+            message: "All celebrants details",
+            celebrants
+        })
+
+    } catch (error) {
+        console.error('Error getting all the celebrants details:', error)
+        res.status(500).json({ message: 'Error getting all the celebrants!' })
+    }
 })
 
 app.listen(PORT, () => {
