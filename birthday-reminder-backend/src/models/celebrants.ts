@@ -10,10 +10,10 @@ interface ICelebrant extends Document {
 
 // Define Joi Schema for Validation
 // Request Validation Schema
-const requestSchema = Joi.object({
-    username: Joi.string().required().description('Username is required!'),
-    email: Joi.string().email().required().description('Email is required!'),
-    dateOfBirth: Joi.date().iso().required().description('Date of birth is required!')
+export const requestSchema = Joi.object({
+    username: Joi.string().required().description('Username is a string!'),
+    email: Joi.string().email().required().description('Ensure email is valid!'),
+    dateOfBirth: Joi.date().iso().required().description('Date must be in ISO format, eg YYYY-MM-DD')
 })
 
 // Mongoose Schema Definition with Type Annotations

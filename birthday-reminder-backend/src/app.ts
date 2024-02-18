@@ -1,6 +1,7 @@
-import express, { Request, Response } from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import dotenv from 'dotenv'
 import Celebrants from './models/celebrants'
+import { requestSchema } from './models/celebrants'
 import dbConnection from './database/db'
 
 dotenv.config()
@@ -13,7 +14,16 @@ app.use(express.json())
 // Connect to Database
 dbConnection()
 
-app.post('/birthdays', async (req: Request, res: Response) => {
+// Validate Request 
+const validateRequest = (req: Request, res: Response, next: NextFunction) => {
+    const { error } = requestSchema.validate(req.body)
+    if (error) {
+        return res.status(400).json({ message: error.message })
+    }
+    next()
+}
+
+app.post('/birthdays', validateRequest, async (req: Request, res: Response) => {
     try {
         // Validate Required Fields
         const { username, email, dateOfBirth } = req.body

@@ -26,14 +26,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.requestSchema = void 0;
 const joi_1 = __importDefault(require("joi"));
 const mongoose_1 = __importStar(require("mongoose"));
 // Define Joi Schema for Validation
 // Request Validation Schema
-const requestSchema = joi_1.default.object({
-    username: joi_1.default.string().required().description('Username is required!'),
-    email: joi_1.default.string().email().required().description('Email is required!'),
-    dateOfBirth: joi_1.default.date().iso().required().description('Date of birth is required!')
+exports.requestSchema = joi_1.default.object({
+    username: joi_1.default.string().required().description('Username is a string!'),
+    email: joi_1.default.string().email().required().description('Ensure email is valid!'),
+    dateOfBirth: joi_1.default.date().iso().required().description('Date must be in ISO format, eg YYYY-MM-DD')
 });
 // Mongoose Schema Definition with Type Annotations
 // Database Schema

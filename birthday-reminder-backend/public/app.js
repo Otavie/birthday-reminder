@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const celebrants_1 = __importDefault(require("./models/celebrants"));
+const celebrants_2 = require("./models/celebrants");
 const db_1 = __importDefault(require("./database/db"));
 dotenv_1.default.config();
 const PORT = process.env.PORT;
@@ -22,7 +23,15 @@ const app = (0, express_1.default)();
 app.use(express_1.default.json());
 // Connect to Database
 (0, db_1.default)();
-app.post('/birthdays', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+// Validate Request 
+const validateRequest = (req, res, next) => {
+    const { error } = celebrants_2.requestSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ message: error.message });
+    }
+    next();
+};
+app.post('/birthdays', validateRequest, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Validate Required Fields
         const { username, email, dateOfBirth } = req.body;
