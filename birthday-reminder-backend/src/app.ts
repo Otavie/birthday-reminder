@@ -27,9 +27,25 @@ mongoose.connection.on('error', (error) => {
 
 
 app.post('/birthdays', async (req: Request, res: Response) => {
-    const { username, email, dateOfBirth } = req.body
-
     try {
+        // Validate Required Field
+        const { username, email, dateOfBirth } = req.body
+        if (!username || !email || !dateOfBirth) {
+            return res.status(400).json({ message: 'Username, email or password is missing!' })
+        }
+
+        // Ensure Username and Email are Unique Using Model Method
+        const existingUsername = await Celebrants.findOne({ username })
+        if (existingUsername) {
+            throw new Error ('Username already in use!')
+        }
+
+        const existingEmail = await Celebrants.findOne({ email })
+        if (existingEmail) {
+            throw new Error('Email already in use!')
+        }
+
+        // Create New Celebrant
         const newCelebrant = new Celebrants({ username, email, dateOfBirth })
         await newCelebrant.save()
 

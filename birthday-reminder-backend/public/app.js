@@ -33,8 +33,22 @@ mongoose_1.default.connection.on('error', (error) => {
     console.log('Error connecting to database:', error);
 });
 app.post('/birthdays', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { username, email, dateOfBirth } = req.body;
     try {
+        // Validate Required Field
+        const { username, email, dateOfBirth } = req.body;
+        if (!username || !email || !dateOfBirth) {
+            return res.status(400).json({ message: 'Username, email or password is missing!' });
+        }
+        // Ensure Username and Email are Unique Using Model Method
+        const existingUsername = yield celebrants_1.default.findOne({ username });
+        if (existingUsername) {
+            throw new Error('Username already in use!');
+        }
+        const existingEmail = yield celebrants_1.default.findOne({ email });
+        if (existingEmail) {
+            throw new Error('Email already in use!');
+        }
+        // Create New Celebrant
         const newCelebrant = new celebrants_1.default({ username, email, dateOfBirth });
         yield newCelebrant.save();
         res.status(201).json({
