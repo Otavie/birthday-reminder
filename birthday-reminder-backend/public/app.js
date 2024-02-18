@@ -14,27 +14,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const mongoose_1 = __importDefault(require("mongoose"));
 const celebrants_1 = __importDefault(require("./models/celebrants"));
+const db_1 = __importDefault(require("./database/db"));
 dotenv_1.default.config();
 const PORT = process.env.PORT;
-const DB_URI = process.env.DB_URI;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
-mongoose_1.default.Promise = Promise;
-mongoose_1.default.connect(DB_URI);
-mongoose_1.default.connection.on('connected', () => {
-    console.log('Connected to database!');
-});
-mongoose_1.default.connection.on('disconnected', () => {
-    console.log('Disconnected from database!');
-});
-mongoose_1.default.connection.on('error', (error) => {
-    console.log('Error connecting to database:', error);
-});
+// Connect to Database
+(0, db_1.default)();
 app.post('/birthdays', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // Validate Required Field
+        // Validate Required Fields
         const { username, email, dateOfBirth } = req.body;
         if (!username || !email || !dateOfBirth) {
             return res.status(400).json({ message: 'Username, email or password is missing!' });
@@ -42,11 +32,11 @@ app.post('/birthdays', (req, res) => __awaiter(void 0, void 0, void 0, function*
         // Ensure Username and Email are Unique Using Model Method
         const existingUsername = yield celebrants_1.default.findOne({ username });
         if (existingUsername) {
-            throw new Error('Username already in use!');
+            return res.status(400).json({ message: 'Username already in use!' });
         }
         const existingEmail = yield celebrants_1.default.findOne({ email });
         if (existingEmail) {
-            throw new Error('Email already in use!');
+            return res.status(400).json({ message: 'Email already in use!' });
         }
         // Create New Celebrant
         const newCelebrant = new celebrants_1.default({ username, email, dateOfBirth });

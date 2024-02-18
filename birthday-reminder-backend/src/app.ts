@@ -1,34 +1,21 @@
 import express, { Request, Response } from 'express'
 import dotenv from 'dotenv'
-import mongoose from 'mongoose'
 import Celebrants from './models/celebrants'
+import dbConnection from './database/db'
+
 dotenv.config()
 
 const PORT = process.env.PORT
-const DB_URI = process.env.DB_URI as string
 
 const app = express()
 app.use(express.json())
 
-mongoose.Promise = Promise
-mongoose.connect(DB_URI)
-
-mongoose.connection.on('connected', () => {
-    console.log('Connected to database!')
-})
-
-mongoose.connection.on('disconnected', () => {
-    console.log('Disconnected from database!')
-})
-
-mongoose.connection.on('error', (error) => {
-    console.log('Error connecting to database:', error)
-})
-
+// Connect to Database
+dbConnection()
 
 app.post('/birthdays', async (req: Request, res: Response) => {
     try {
-        // Validate Required Field
+        // Validate Required Fields
         const { username, email, dateOfBirth } = req.body
         if (!username || !email || !dateOfBirth) {
             return res.status(400).json({ message: 'Username, email or password is missing!' })
@@ -37,12 +24,12 @@ app.post('/birthdays', async (req: Request, res: Response) => {
         // Ensure Username and Email are Unique Using Model Method
         const existingUsername = await Celebrants.findOne({ username })
         if (existingUsername) {
-            throw new Error ('Username already in use!')
+            return res.status(400).json({ message: 'Username already in use!' })
         }
 
         const existingEmail = await Celebrants.findOne({ email })
         if (existingEmail) {
-            throw new Error('Email already in use!')
+            return res.status(400).json({ message: 'Email already in use!' })
         }
 
         // Create New Celebrant
