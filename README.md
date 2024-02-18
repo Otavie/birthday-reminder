@@ -57,17 +57,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For any inquiries or support, please contact [otavieokuoyo@gmail.com](mailto:otavieokuoyo@gmail.com). We'd love to hear from you!
 
+---
+
 ### LET'S CRACK SOME OF THE CODE
 
-**In the Model subdirectory** we have two schema definitions, both schemas are needed:
+In the **model subdirectory** we have two schema definitions, both schemas are needed:
 
 **Joi schema validates requests**
 **Mongoose schema defines document structure in DB**
 
 We could have one combined schema but it's cleaner to separate concerns:
 
--   Joi for request validation
--   Mongoose for database modeling
+- Joi for request validation
+- Mongoose for database modeling
 
 #### Some key differences:
 

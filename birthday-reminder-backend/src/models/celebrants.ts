@@ -1,12 +1,41 @@
 import Joi from 'joi'
-import mongoose from 'mongoose'
+import mongoose, { Schema, Document, Model } from 'mongoose'
 
-const celebrantSchema = new mongoose.Schema({
-    username: Joi.string().required(),
-    email: Joi.string().email().required(),
-    dateOfBirth: Joi.date().iso().required()
+// Define Interface for Celebrant Document
+interface ICelebrant extends Document {
+    username: string;
+    email: string;
+    dateOfBirth: Date
+}
+
+// Define Joi Schema for Validation
+// Request Validation Schema
+const requestSchema = Joi.object({
+    username: Joi.string().required().description('Username is required!'),
+    email: Joi.string().email().required().description('Email is required!'),
+    dateOfBirth: Joi.date().iso().required().description('Date of birth is required!')
 })
 
-const Celebrants = mongoose.model('Celebrants', celebrantSchema)
+// Mongoose Schema Definition with Type Annotations
+// Database Schema
+const celebrantSchema: Schema<ICelebrant> = new Schema({
+    username: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    email: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    dateOfBirth: {
+        type: Date,
+        required: true
+    }
+})
+
+// Celebrant Model
+const Celebrants: Model<ICelebrant> = mongoose.model<ICelebrant>('Celebrants', celebrantSchema)
 
 export default Celebrants
