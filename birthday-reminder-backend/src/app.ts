@@ -2,8 +2,7 @@ import express, { Request, Response } from 'express'
 import dotenv from 'dotenv'
 import Celebrants from './models/celebrants'
 import dbConnection from './database/db'
-import validateRequest from './middleware/validate.request'
-
+import routes from './routes/routes'
 dotenv.config()
 
 const PORT = process.env.PORT
@@ -14,38 +13,7 @@ app.use(express.json())
 // Connect to Database
 dbConnection()
 
-app.post('/birthdays', validateRequest, async (req: Request, res: Response) => {
-    try {
-        // Validate Required Fields
-        const { username, email, dateOfBirth } = req.body
-        if (!username || !email || !dateOfBirth) {
-            return res.status(400).json({ message: 'Username, email or password is missing!' })
-        }
-
-        // Ensure Username and Email are Unique Using Model Method
-        const existingUsername = await Celebrants.findOne({ username })
-        if (existingUsername) {
-            return res.status(400).json({ message: 'Username already in use!' })
-        }
-
-        const existingEmail = await Celebrants.findOne({ email })
-        if (existingEmail) {
-            return res.status(400).json({ message: 'Email already in use!' })
-        }
-
-        // Create New Celebrant
-        const newCelebrant = new Celebrants({ username, email, dateOfBirth })
-        await newCelebrant.save()
-
-        res.status(201).json({
-            message: 'Celebrant added successfully!',
-            newCelebrant
-        })
-    } catch (error) {
-        console.error('Error adding celebrant:', error)
-        res.status(500).json({ message: 'Error adding celebrant!' })
-    }
-})
+app.use('/', routes)
 
 app.get('/birthdays', async (req: Request, res: Response) => {
     try {

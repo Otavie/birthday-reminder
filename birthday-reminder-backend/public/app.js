@@ -16,42 +16,14 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const celebrants_1 = __importDefault(require("./models/celebrants"));
 const db_1 = __importDefault(require("./database/db"));
-const validate_request_1 = __importDefault(require("./middleware/validate.request"));
+const routes_1 = __importDefault(require("./routes/routes"));
 dotenv_1.default.config();
 const PORT = process.env.PORT;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 // Connect to Database
 (0, db_1.default)();
-app.post('/birthdays', validate_request_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        // Validate Required Fields
-        const { username, email, dateOfBirth } = req.body;
-        if (!username || !email || !dateOfBirth) {
-            return res.status(400).json({ message: 'Username, email or password is missing!' });
-        }
-        // Ensure Username and Email are Unique Using Model Method
-        const existingUsername = yield celebrants_1.default.findOne({ username });
-        if (existingUsername) {
-            return res.status(400).json({ message: 'Username already in use!' });
-        }
-        const existingEmail = yield celebrants_1.default.findOne({ email });
-        if (existingEmail) {
-            return res.status(400).json({ message: 'Email already in use!' });
-        }
-        // Create New Celebrant
-        const newCelebrant = new celebrants_1.default({ username, email, dateOfBirth });
-        yield newCelebrant.save();
-        res.status(201).json({
-            message: 'Celebrant added successfully!',
-            newCelebrant
-        });
-    }
-    catch (error) {
-        console.error('Error adding celebrant:', error);
-        res.status(500).json({ message: 'Error adding celebrant!' });
-    }
-}));
+app.use('/', routes_1.default);
 app.get('/birthdays', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const celebrants = yield celebrants_1.default.find();
