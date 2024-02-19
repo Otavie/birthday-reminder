@@ -1,13 +1,12 @@
-import express, { Request, Response } from 'express'
+import express from 'express'
 import dotenv from 'dotenv'
-import Celebrants from './models/celebrants'
 import dbConnection from './database/db'
 import routes from './routes/routes'
 dotenv.config()
 
 const PORT = process.env.PORT
 
-const app = express()
+export const app = express()
 app.use(express.json())
 
 // Connect to Database
