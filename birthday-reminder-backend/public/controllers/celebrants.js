@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.addCelebrant = void 0;
+exports.getAllCelebrants = exports.addCelebrant = void 0;
 const celebrants_1 = __importDefault(require("../models/celebrants"));
 const addCelebrant = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -41,3 +41,17 @@ const addCelebrant = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.addCelebrant = addCelebrant;
+const getAllCelebrants = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const allCelebrants = yield celebrants_1.default.find();
+        res.status(200).json({
+            message: 'All celebrants!',
+            allCelebrants
+        });
+    }
+    catch (error) {
+        console.log('Error in getting all celebrants:', error);
+        res.status(400).json({ message: 'Unable to get all celebrants!' });
+    }
+});
+exports.getAllCelebrants = getAllCelebrants;

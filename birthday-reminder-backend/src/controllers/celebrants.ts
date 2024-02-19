@@ -32,3 +32,18 @@ export const addCelebrant = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error adding celebrant!' })
     }
 }
+
+export const getAllCelebrants = async (req: Request, res: Response) => {
+    try {
+        const allCelebrants = await Celebrants.find()
+
+        res.status(200).json({
+            message: 'All celebrants!',
+            allCelebrants
+        })
+
+    } catch (error) {
+        console.log('Error in getting all celebrants:', error)
+        res.status(400).json({ message: 'Unable to get all celebrants!' })
+    }
+}
