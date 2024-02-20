@@ -6,7 +6,7 @@ dotenv.config()
 
 const PORT = process.env.PORT
 
-export const app = express()
+const app = express()
 app.use(express.json())
 
 // Connect to Database
@@ -17,3 +17,5 @@ app.use('/', routes)
 app.listen(PORT, () => {
     console.log(`Server is running on PORT http://localhost:${PORT}`)
 })
+
+export default app

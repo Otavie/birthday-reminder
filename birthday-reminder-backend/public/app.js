@@ -17,3 +17,4 @@ app.use('/', routes_1.default);
 app.listen(PORT, () => {
     console.log(`Server is running on PORT http://localhost:${PORT}`);
 });
+exports.default = app;
