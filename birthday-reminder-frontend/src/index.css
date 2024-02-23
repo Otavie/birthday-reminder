@@ -25,10 +25,13 @@ code {
   color: white;
 }
 
+h1 {
+  margin-bottom: 2rem;
+}
+
 .form-container {
   border: 1px solid wheat;
-  width: 90%;
-  min-height: 70%;
+  min-height: calc(70% - 2rem);
 }
 
 form {
@@ -37,7 +40,6 @@ form {
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-color: blue;
 }
 
 .label-input-container {
