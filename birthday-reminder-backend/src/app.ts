@@ -5,9 +5,13 @@ import dbConnection from './database/db'
 import routes from './routes/routes'
 import cron from 'node-cron'
 import Celebrants from './models/celebrants'
+import nodemailer from 'nodemailer'
 dotenv.config()
 
 const PORT = process.env.PORT
+const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS
+const EMAIL_PASS = process.env.EMAIL_PASS
+
 
 const app = express()
 app.use(express.json())
@@ -19,6 +23,30 @@ app.use(cors())
 dbConnection()
 
 app.use('/', routes)
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: EMAIL_ADDRESS,
+        pass: EMAIL_PASS
+    }
+})
+
+const sendBirthdayEmail = async (email: string) => {
+    const emailOptions = {
+        from: EMAIL_ADDRESS,
+        to: email,
+        subject: 'Happy Birthday!',
+        text: 'Wishing you a fantastic birthday filled with joy,love and happiness!'
+    }
+
+    try {
+        await transporter.sendMail(emailOptions)
+        console.log(`Birthday email sent to ${email}`)
+    } catch (error) {
+        console.error(`Error sending birthday messages to ${email}:`, error)
+    }
+}
 
 const cronTask = async () => {
     try {
@@ -35,12 +63,11 @@ const cronTask = async () => {
             }
         })
 
-
         if (celebrants.length) {
             // console.log(celebrants)
-            console.log('Happy birthday to ')
+            console.log('Sending birthday email...')
             celebrants.forEach((celebrant) => {
-                console.log(`- ${celebrant.email}`)
+                sendBirthdayEmail(celebrant.email)
             })
         } else {
             console.log('No celebrants today!')

@@ -19,8 +19,11 @@ const db_1 = __importDefault(require("./database/db"));
 const routes_1 = __importDefault(require("./routes/routes"));
 const node_cron_1 = __importDefault(require("node-cron"));
 const celebrants_1 = __importDefault(require("./models/celebrants"));
+const nodemailer_1 = __importDefault(require("nodemailer"));
 dotenv_1.default.config();
 const PORT = process.env.PORT;
+const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS;
+const EMAIL_PASS = process.env.EMAIL_PASS;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 // Enable Cors
@@ -28,6 +31,28 @@ app.use((0, cors_1.default)());
 // Connect to Database
 (0, db_1.default)();
 app.use('/', routes_1.default);
+const transporter = nodemailer_1.default.createTransport({
+    service: 'gmail',
+    auth: {
+        user: EMAIL_ADDRESS,
+        pass: EMAIL_PASS
+    }
+});
+const sendBirthdayEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    const emailOptions = {
+        from: EMAIL_ADDRESS,
+        to: email,
+        subject: 'Happy Birthday!',
+        text: 'Wishing you a fantastic birthday filled with joy,love and happiness!'
+    };
+    try {
+        yield transporter.sendMail(emailOptions);
+        console.log(`Birthday email sent to ${email}`);
+    }
+    catch (error) {
+        console.error(`Error sending birthday messages to ${email}:`, error);
+    }
+});
 const cronTask = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const todayDate = new Date();
@@ -43,9 +68,9 @@ const cronTask = () => __awaiter(void 0, void 0, void 0, function* () {
         });
         if (celebrants.length) {
             // console.log(celebrants)
-            console.log('Happy birthday to ');
+            console.log('Sending birthday email...');
             celebrants.forEach((celebrant) => {
-                console.log(`- ${celebrant.email}`);
+                sendBirthdayEmail(celebrant.email);
             });
         }
         else {
