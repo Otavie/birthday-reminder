@@ -28,27 +28,35 @@ app.use((0, cors_1.default)());
 // Connect to Database
 (0, db_1.default)();
 app.use('/', routes_1.default);
-// cron.schedule('*/5 * * * *', async() => {
-node_cron_1.default.schedule('0 7 * * *', () => __awaiter(void 0, void 0, void 0, function* () {
+const cronTask = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const todayDate = new Date();
+        const todayDay = todayDate.getDate(); // Get today's day
+        const todayMonth = todayDate.getMonth() + 1; // Gte today's month
         const celebrants = yield celebrants_1.default.find({
-            dateOfBirth: {
-                $gte: new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate()).setHours(0, 0, 0, 0),
-                $lt: new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate() + 1).setHours(0, 0, 0, 0)
+            $expr: {
+                $and: [
+                    { $eq: [{ $month: '$dateOfBirth' }, todayMonth] },
+                    { $eq: [{ $dayOfMonth: '$dateOfBirth' }, todayDay] }
+                ]
             }
         });
-        if (celebrants.length > 0) {
-            console.log('Sending birthday email to celebrants:', celebrants);
+        if (celebrants.length) {
+            // console.log(celebrants)
+            console.log('Happy birthday to ');
+            celebrants.forEach((celebrant) => {
+                console.log(`- ${celebrant.email}`);
+            });
         }
         else {
-            console.log('No birthday today!');
+            console.log('No celebrants today!');
         }
     }
     catch (error) {
-        console.error('Error checking for birthday:', error);
+        console.log('Error checking for birthday:', error);
     }
-}));
+});
+node_cron_1.default.schedule('*/1 * * * *', cronTask);
 app.listen(PORT, () => {
     console.log(`Server is running on PORT http://localhost:${PORT}`);
 });
