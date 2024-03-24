@@ -12,7 +12,6 @@ const PORT = process.env.PORT
 const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS
 const EMAIL_PASS = process.env.EMAIL_PASS
 
-
 const app = express()
 app.use(express.json())
 
@@ -26,6 +25,9 @@ app.use('/', routes)
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
+    // host: 'smtp.gmail.com',
+    // port: 587,
+    // secure: true,
     auth: {
         user: EMAIL_ADDRESS,
         pass: EMAIL_PASS
@@ -51,17 +53,18 @@ const sendBirthdayEmail = async (email: string) => {
 const cronTask = async () => {
     try {
         const todayDate = new Date()
-        const todayDay = todayDate.getDate()            // Get today's day
-        const todayMonth = todayDate.getMonth() + 1     // Gte today's month
+        const todayDay = todayDate.getDate()                // Get today's day
+        const todayMonth = todayDate.getMonth() + 1         // Get today's month
                 
         const celebrants = await Celebrants.find({
             $expr: {
                 $and: [
-                    { $eq: [{ $month: '$dateOfBirth' }, todayMonth] },
+                    { $eq: [{ $subtract: [{ $month: '$dateOfBirth' }, 1] }, todayMonth] },
                     { $eq: [{ $dayOfMonth: '$dateOfBirth' }, todayDay] }
                 ]
             }
         })
+
 
         if (celebrants.length) {
             // console.log(celebrants)
@@ -71,6 +74,7 @@ const cronTask = async () => {
             })
         } else {
             console.log('No celebrants today!')
+            console.log(celebrants)
         }
 
     } catch (error) {
@@ -78,7 +82,11 @@ const cronTask = async () => {
     }
 }
 
-cron.schedule('*/1 * * * *', cronTask)
+// cron.schedule('*/0.25 * * * *', cronTask)          // Cron job runs every 15 seconds
+// cron.schedule('*/0.5 * * * *', cronTask)          // Cron job runs every 30 seconds
+cron.schedule('*/1 * * * *', cronTask)          // Cron job runs every minute
+// cron.schedule('*/30 * * * *', cronTask)          // Cron job runs every 30 minute
+// cron.schedule('0 7 * * *', cronTask)         // Cron job runs 7am every day
 
 app.listen(PORT, () => {
     console.log(`Server is running on PORT http://localhost:${PORT}`)
