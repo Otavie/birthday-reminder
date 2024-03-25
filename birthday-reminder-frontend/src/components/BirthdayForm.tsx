@@ -1,5 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // const PORT = process.env.REACT_APP_PORT;
 
@@ -19,25 +21,42 @@ const BirthdayForm = () => {
       });
 
       if (response.status === 201) {
-        console.log("celebrants added successfully!");
+        toast.success("Celebrants added successfully!");
+        console.log("Celebrants added successfully!");
         setUsername("");
         setEmail("");
         setDateOfBirth("");
       } else {
-        console.error("Error adding celebrants:", response.data.message);
+        toast.error(response.data.message);
       }
       console.log(response);
-    } catch (error) {
-      console.error("Error adding celebrants:", error);
+    } catch (error: any) {
+      if (error.response && error.response.data.state === "EmptyFields") {
+        toast.error("Username, email or date of birth is missing!");
+      } else if (
+        error.response &&
+        error.response.data.state === "DuplicateEmail"
+      ) {
+        toast.error("Email already in use!");
+      } else if (
+        error.response &&
+        error.response.data.state === "DuplicateUsername"
+      ) {
+        toast.error("Username already in use!");
+      } else {
+        console.error("Error adding celebrant:", error);
+        toast.error("An error while adding the celebrant!");
+      }
     }
-
-    setUsername("");
-    setEmail("");
-    setDateOfBirth("");
+    // Reset form fields
+    // setUsername("");
+    // setEmail("");
+    // setDateOfBirth("");
   };
 
   return (
     <div className="form-container">
+      <ToastContainer />
       <form action="" onSubmit={handleSubmit}>
         <div className="label-input-container">
           <label htmlFor="username">Username:</label>
@@ -71,8 +90,8 @@ const BirthdayForm = () => {
           />
         </div>
 
-        <button className="submit-btn" type="submit" onClick={handleSubmit}>
-          Add Birthday Reminder
+        <button className="submit-btn" type="submit">
+          Add Celebrant
         </button>
       </form>
     </div>

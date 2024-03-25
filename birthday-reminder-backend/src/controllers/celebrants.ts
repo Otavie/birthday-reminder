@@ -6,17 +6,26 @@ export const addCelebrant = async (req: Request, res: Response) => {
         const { username, email, dateOfBirth } = req.body
 
         if (!username || !email || !dateOfBirth) {
-            return res.status(400).json({ message: 'Username, email or date of birth is missing!' })
+            return res.status(400).json({ 
+                message: 'Username, email or date of birth is missing!',
+                state: 'EmptyFields'
+             })
         }
 
         const existingEmail = await Celebrants.findOne({ email })
         if  (existingEmail) {
-            return res.status(400).json({ message: 'Email already in use!' })
+            return res.status(400).json({ 
+                message: 'Email already in use!',
+                state: 'DuplicateEmail'
+             })
         }
 
         const existingUsername = await Celebrants.findOne({ username })
         if (existingUsername) {
-            res.status(400).json({ message: 'Username already in use' })
+            res.status(400).json({ 
+                message: 'Username already in use!',
+                state: 'DuplicateUsername'
+             })
         }
 
         const newCelebrant = new Celebrants({ username, email, dateOfBirth })
@@ -29,7 +38,7 @@ export const addCelebrant = async (req: Request, res: Response) => {
 
     } catch (error) {
         console.log('Error adding celebrant:', error)
-        res.status(500).json({ message: 'Error adding celebrant!' })
+        // res.status(500).json({ message: 'Error adding celebrant!' })
     }
 }
 

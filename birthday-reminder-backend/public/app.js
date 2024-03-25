@@ -33,12 +33,15 @@ app.use((0, cors_1.default)());
 app.use('/', routes_1.default);
 const transporter = nodemailer_1.default.createTransport({
     service: 'gmail',
-    // host: 'smtp.gmail.com',
-    // port: 587,
-    // secure: true,
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
     auth: {
         user: EMAIL_ADDRESS,
         pass: EMAIL_PASS
+    },
+    tls: {
+        rejectUnauthorized: false
     }
 });
 const sendBirthdayEmail = (email) => __awaiter(void 0, void 0, void 0, function* () {
@@ -46,7 +49,7 @@ const sendBirthdayEmail = (email) => __awaiter(void 0, void 0, void 0, function*
         from: EMAIL_ADDRESS,
         to: email,
         subject: 'Happy Birthday!',
-        text: 'Wishing you a fantastic birthday filled with joy,love and happiness!'
+        text: 'Wishing you a fantastic birthday filled with joy, love and happiness!'
     };
     try {
         yield transporter.sendMail(emailOptions);
@@ -60,7 +63,7 @@ const cronTask = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const todayDate = new Date();
         const todayDay = todayDate.getDate(); // Get today's day
-        const todayMonth = todayDate.getMonth() + 1; // Get today's month
+        const todayMonth = todayDate.getMonth(); // Get today's month
         const celebrants = yield celebrants_1.default.find({
             $expr: {
                 $and: [
@@ -85,11 +88,9 @@ const cronTask = () => __awaiter(void 0, void 0, void 0, function* () {
         console.log('Error checking for birthday:', error);
     }
 });
-// cron.schedule('*/0.25 * * * *', cronTask)          // Cron job runs every 15 seconds
-// cron.schedule('*/0.5 * * * *', cronTask)          // Cron job runs every 30 seconds
-node_cron_1.default.schedule('*/1 * * * *', cronTask); // Cron job runs every minute
-// cron.schedule('*/30 * * * *', cronTask)          // Cron job runs every 30 minute
+// cron.schedule('*/1 * * * *', cronTask)          // Cron job runs every minute
 // cron.schedule('0 7 * * *', cronTask)         // Cron job runs 7am every day
+node_cron_1.default.schedule('0 13 * * *', cronTask); // Cron job runs at 1pm every day
 app.listen(PORT, () => {
     console.log(`Server is running on PORT http://localhost:${PORT}`);
 });

@@ -18,15 +18,24 @@ const addCelebrant = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     try {
         const { username, email, dateOfBirth } = req.body;
         if (!username || !email || !dateOfBirth) {
-            return res.status(400).json({ message: 'Username, email or date of birth is missing!' });
+            return res.status(400).json({
+                message: 'Username, email or date of birth is missing!',
+                state: 'EmptyFields'
+            });
         }
         const existingEmail = yield celebrants_1.default.findOne({ email });
         if (existingEmail) {
-            return res.status(400).json({ message: 'Email already in use!' });
+            return res.status(400).json({
+                message: 'Email already in use!',
+                state: 'DuplicateEmail'
+            });
         }
         const existingUsername = yield celebrants_1.default.findOne({ username });
         if (existingUsername) {
-            res.status(400).json({ message: 'Username already in use' });
+            res.status(400).json({
+                message: 'Username already in use!',
+                state: 'DuplicateUsername'
+            });
         }
         const newCelebrant = new celebrants_1.default({ username, email, dateOfBirth });
         yield newCelebrant.save();
@@ -37,7 +46,7 @@ const addCelebrant = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
     catch (error) {
         console.log('Error adding celebrant:', error);
-        res.status(500).json({ message: 'Error adding celebrant!' });
+        // res.status(500).json({ message: 'Error adding celebrant!' })
     }
 });
 exports.addCelebrant = addCelebrant;

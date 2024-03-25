@@ -25,12 +25,15 @@ app.use('/', routes)
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
-    // host: 'smtp.gmail.com',
-    // port: 587,
-    // secure: true,
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
     auth: {
         user: EMAIL_ADDRESS,
         pass: EMAIL_PASS
+    },
+    tls: {
+        rejectUnauthorized: false
     }
 })
 
@@ -39,7 +42,7 @@ const sendBirthdayEmail = async (email: string) => {
         from: EMAIL_ADDRESS,
         to: email,
         subject: 'Happy Birthday!',
-        text: 'Wishing you a fantastic birthday filled with joy,love and happiness!'
+        text: 'Wishing you a fantastic birthday filled with joy, love and happiness!'
     }
 
     try {
@@ -54,7 +57,7 @@ const cronTask = async () => {
     try {
         const todayDate = new Date()
         const todayDay = todayDate.getDate()                // Get today's day
-        const todayMonth = todayDate.getMonth() + 1         // Get today's month
+        const todayMonth = todayDate.getMonth()             // Get today's month
                 
         const celebrants = await Celebrants.find({
             $expr: {
@@ -64,7 +67,6 @@ const cronTask = async () => {
                 ]
             }
         })
-
 
         if (celebrants.length) {
             // console.log(celebrants)
@@ -82,11 +84,9 @@ const cronTask = async () => {
     }
 }
 
-// cron.schedule('*/0.25 * * * *', cronTask)          // Cron job runs every 15 seconds
-// cron.schedule('*/0.5 * * * *', cronTask)          // Cron job runs every 30 seconds
-cron.schedule('*/1 * * * *', cronTask)          // Cron job runs every minute
-// cron.schedule('*/30 * * * *', cronTask)          // Cron job runs every 30 minute
+// cron.schedule('*/1 * * * *', cronTask)          // Cron job runs every minute
 // cron.schedule('0 7 * * *', cronTask)         // Cron job runs 7am every day
+cron.schedule('0 13 * * *', cronTask)         // Cron job runs at 1pm every day
 
 app.listen(PORT, () => {
     console.log(`Server is running on PORT http://localhost:${PORT}`)
