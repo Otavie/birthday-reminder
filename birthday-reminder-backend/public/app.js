@@ -89,8 +89,8 @@ const cronTask = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 // cron.schedule('*/1 * * * *', cronTask)          // Cron job runs every minute
-// cron.schedule('0 7 * * *', cronTask)         // Cron job runs 7am every day
-node_cron_1.default.schedule('0 13 * * *', cronTask); // Cron job runs at 1pm every day
+node_cron_1.default.schedule('0 7 * * *', cronTask); // Cron job runs 7am every day
+// cron.schedule('0 13 * * *', cronTask)         // Cron job runs at 1pm every day
 app.listen(PORT, () => {
     console.log(`Server is running on PORT http://localhost:${PORT}`);
 });
