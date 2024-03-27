@@ -63,11 +63,12 @@ const cronTask = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const todayDate = new Date();
         const todayDay = todayDate.getDate(); // Get today's day
-        const todayMonth = todayDate.getMonth(); // Get today's month
+        const todayMonth = todayDate.getMonth() + 1; // Get today's month
         const celebrants = yield celebrants_1.default.find({
             $expr: {
                 $and: [
-                    { $eq: [{ $subtract: [{ $month: '$dateOfBirth' }, 1] }, todayMonth] },
+                    // { $eq: [{ $subtract: [{ $month: '$dateOfBirth' }, 1] }, todayMonth] },
+                    { $eq: [{ $month: '$dateOfBirth' }, todayMonth] },
                     { $eq: [{ $dayOfMonth: '$dateOfBirth' }, todayDay] }
                 ]
             }
